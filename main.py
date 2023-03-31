@@ -1,10 +1,10 @@
 import discord
 import whostherebot
 import os
-from dotenv import load_dotenv
+from dotenv import main as dotenv
 
 def main():
-    load_dotenv()
+    dotenv.load_dotenv()
 
     myBot = whostherebot.WhosThereBot(os.getenv('TOKEN'))
     myBot.runMainLoop()
