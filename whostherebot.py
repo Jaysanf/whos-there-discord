@@ -40,14 +40,15 @@ class WhosThereBot :
 
             # Check only for DMs
             if isinstance((message.channel), discord.channel.DMChannel):
+                my_user =  self.client.get_user(message.author.id)
                 if message.content == "who":
-                    await self.whosOnline(message.author)
+                    await self.whosOnline(my_user,message.channel)
                 if message.content == "help":
-                    await self.help(message.author)
+                    await self.help(my_user,message.channel )
                 if message.content == "subscribe":
-                    await self.subscribe(message.author)
+                    await self.subscribe(my_user,message.channel)
                 if message.content == "unsubscribe":
-                    await self.unsubscribe(message.author)
+                    await self.unsubscribe(my_user,message.channel)
             return
         
         @self.client.event
@@ -85,29 +86,29 @@ class WhosThereBot :
 
         self.client.run(self.token)
 
-    async def whosOnline(self, user):
+    async def whosOnline(self, user, channel):
         mutualGuilds = user.mutual_guilds
         msg = ""
-        async with user.dm_channel.typing():
+        async with channel.typing():
             for guild in mutualGuilds:
                 msg += f"Discord server: {guild.name} \n"
                 vcs = (guild.voice_channels)
                 for vc in vcs:
                     if vc.members != []:
                         msg += "\t\t" + self.channelFormat(vc) + "\n"
-            await user.dm_channel.send(msg)
+            await channel.send(msg)
         return
 
-    async def help(self):
+    async def help(self, channel):
         pass
 
-    async def subscribe(self,user):
+    async def subscribe(self,user, channel):
         if f'{user.id}' not in self.userLog:
             self.userLog[f'{user.id}'] = []
         guildSubscribed = self.userLog[f'{user.id}']
 
         msg = f"Which Discord server you wanna subscribe (Click the corresponding reaction):\n\n"
-        async with user.dm_channel.typing():
+        async with channel.typing():
             counter = 0 
             for guild in list(set(user.mutual_guilds) - set(guildSubscribed)):
 
@@ -116,7 +117,7 @@ class WhosThereBot :
                 counter += 1
 
             
-            myMSG = await user.dm_channel.send(msg)
+            myMSG = await channel.send(msg)
         # Add a reaction to the the MSG
         counter = 0 
         emojis = ["0️⃣", "1️⃣","2️⃣","3️⃣","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣","🔟"]
@@ -133,9 +134,9 @@ class WhosThereBot :
                 self.userLog[f'{user.id}'].append(list(set(user.mutual_guilds) - set(guildSubscribed))[guildPos])
                 await myMSG.delete()
 
-    async def unsubscribe(self,user):
+    async def unsubscribe(self,user,channel):
         self.userLog[f'{user.id}'] = []
-        await user.dm_channel.send("Unsubcribed successfully,")
+        await channel.send("Unsubcribed successfully,")
 
     def channelFormat(self, channel):
         myStr = f"There is **{len(channel.members)}** member in **{channel.name}** : \n"
