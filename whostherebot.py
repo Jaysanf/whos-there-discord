@@ -60,20 +60,20 @@ class WhosThereBot :
                 # If its yourself, no notification
                 if int(key) == member.id :
                     continue
-                    
 
+                dm_channel = await self.client.create_dm(user)
                 # If the user cant view the channel, no notification will be sent
                 if (before.channel is None)and after.channel.guild in self.userLog[key]:
                     member1 = after.channel.guild.get_member(int(key))
                     if after.channel.permissions_for(member1).view_channel == False:
                         continue
-                    await user.dm_channel.send(f"User **{member.name}** as join **{after.channel.name}** in **{after.channel.guild.name}**") 
+                    await dm_channel.send(f"User **{member.name}** as join **{after.channel.name}** in **{after.channel.guild.name}**")
 
                 elif after.channel is None and before.channel.guild in self.userLog[key]:
                     member1 = before.channel.guild.get_member(int(key))
                     if before.channel.permissions_for(member1).view_channel == False:
                         continue
-                    await user.dm_channel.send(f"User **{member.name}** as left **{before.channel.name}** in **{before.channel.guild.name}**")
+                    await dm_channel.send(f"User **{member.name}** as left **{before.channel.name}** in **{before.channel.guild.name}**")
 
 
                 
